@@ -1,7 +1,3 @@
-# import os 
-# import sys
-
-# sys.path.append (os.getcwd)
 
 from sqlalchemy import (create_engine,Column,Integer,String,ForeignKey,Table)
 from sqlalchemy.orm import sessionmaker,relationship,backref
@@ -42,7 +38,7 @@ class Teacher(Base):
         fav_student=session.query(Student).order_by(Student.position_in.desc()).first()
         return fav_student
     # def add_student(self):
-    #     student=Student(first_name=first_name,)
+    #     student=Student(teacher= self, )
     # def eliminate_student(self):
     #     students_to_eliminate=[student for student in self.students if student.]
 class Parent(Base):
@@ -52,7 +48,7 @@ class Parent(Base):
     last_name=Column(String())
     age=Column(Integer())
     students=relationship("Student",backref=backref("parent"))
-    teachers=relationship("Parent",secondary="teacher_parent",back_populates="parents")
+    teachers=relationship("Teacher",secondary="teacher_parent",back_populates="parents")
 
 
     def __repr__(self):
@@ -75,7 +71,7 @@ class Student(Base):
     id = Column(Integer(), primary_key=True)
     first_name=Column(String())
     last_name=Column(String())
-    class_in= Column(Integer())
+    grade_in= Column(Integer())
     age_in=Column(Integer())
     position_in=Column(Integer())
     parent_id=Column(Integer(), ForeignKey("parents.id"))
