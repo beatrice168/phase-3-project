@@ -1,8 +1,9 @@
 
+from requests import Session
 from sqlalchemy import (create_engine,Column,Integer,String,ForeignKey,Table)
 from sqlalchemy.orm import sessionmaker,relationship,backref
 from sqlalchemy.ext.declarative import declarative_base
-
+import click
 Base = declarative_base()
 
 if __name__ == '__main__':
@@ -34,11 +35,14 @@ class Teacher(Base):
         return self.parents
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
+    
     def fav_student(self):
         fav_student=session.query(Student).order_by(Student.position_in.desc()).first()
         return fav_student
-    # def add_student(self):
-    #     student=Student(teacher= self, )
+    # def add_student(age_in,grade_in,first_name,session):
+    #     student=Student(first_name=first_name, age_in=age_in,grade_in=grade_in )
+    #     session.add(student)
+    #     session.commit()
     # def eliminate_student(self):
     #     students_to_eliminate=[student for student in self.students if student.]
 class Parent(Base):
@@ -86,13 +90,52 @@ class Student(Base):
         return f'Student(id={self.id}),'+ \
             f'first_name={self.first_name},'+ \
             f'last_name = {self.last_name},'+ \
-            f'class_in={self.class_in},'+ \
+            f'grade_in={self.grade_in},'+ \
             f'age_in={self.age_in},'+ \
             f'position_in={self.position_in},'+ \
             f'parent_id={self.parent_id},'+ \
             f'teacher_id={self.teacher_id},'
-            
+    
+         
+    @click.command()
+    def add_student():
+        # session=Session()
+        first_name= input("Enter your first name: ")
+        last_name=input("Enter your last name: ")
+        grade_in=input("Enter your grade: ")
+        student=Student(first_name=first_name,last_name=last_name,grade_in=grade_in)
+        session.add(student)
+        session.commit()
+        # session.close()
+        print(f'added student {first_name} {last_name} ')
 
+    @click.command()
+    def add_parent():
+        # session=Session()
+        first_name=input("Enter your first name: ")
+        last_name=input("Enter your last name: ")
+        age=input("Enter your age: ")
+        parent=Parent(first_name=first_name,last_name=last_name,age=age)
+        session.add(parent)
+        session.commit()
+        #session.close()
+        print(f'Added parent {first_name} {last_name}')
+    
+    if __name__=='__main__':
+        Session=sessionmaker(bind=engine)
 
+        while True:
+            print("\nSchool management system")
+            print("1. Add Student")
+            print("2. Add Parent")
+            print("3. Quit")
 
-
+            choice=input("Enter your choice (1-3)")
+            if choice == '1':
+                add_student()
+            elif choice =='2':
+                add_parent()
+            elif choice=='3':
+                break
+            else:
+                print("Invalid choice.opppsy! Try again.")
