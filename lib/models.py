@@ -1,9 +1,7 @@
 
-from requests import Session
 from sqlalchemy import (create_engine,Column,Integer,String,ForeignKey,Table)
 from sqlalchemy.orm import sessionmaker,relationship,backref
 from sqlalchemy.ext.declarative import declarative_base
-import click
 Base = declarative_base()
 
 if __name__ == '__main__':
@@ -36,9 +34,9 @@ class Teacher(Base):
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
     
-    def fav_student(self):
-        fav_student=session.query(Student).order_by(Student.position_in.desc()).first()
-        return fav_student
+    # def fav_student(self):
+    #     fav_student=session.query(Student).order_by(Student.position_in.desc()).first()
+    #     return fav_student
     # def add_student(age_in,grade_in,first_name,session):
     #     student=Student(first_name=first_name, age_in=age_in,grade_in=grade_in )
     #     session.add(student)

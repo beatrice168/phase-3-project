@@ -1,56 +1,52 @@
 import click
 from sqlalchemy.orm import sessionmaker
-from models import Parent,Student
+from models import Parent,Student,Teacher
 from sqlalchemy import (create_engine)
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
+
 
 engine = create_engine("sqlite:///school.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 
+@click.group()
+def cli():
+    pass
 
-     
-@click.command()
-def add_student():
-    # session=Session()
-    first_name= input("Enter your first name: ")
-    last_name=input("Enter your last name: ")
-    grade_in=input("Enter your grade: ")
-    position_in=input("Enter your position: ")
-    parent_id=input("Enter the parent id: ")
-    teacher_id=input("Enter the teacher id: ")
-    student=Student(first_name=first_name,last_name=last_name,grade_in=grade_in,position_in=position_in,parent_id=parent_id,teacher_id=teacher_id)
+
+@cli.command()
+def create_db():
+    engine = create_engine('sqlite:///school.db', echo=True)
+    Base.metadata.create_all(engine)
+    print("Database created successfully.")
+
+@cli.command()
+@click.option('--first-name', prompt='Enter the first name')
+@click.option('--last-name', prompt='Enter the last name')
+def add_teacher(first_name, last_name):
+    teacher = Teacher(first_name=first_name, last_name=last_name)
+    session.add(teacher)
+    session.commit()
+    print("Teacher added successfully.")
+
+@cli.command()
+@click.option('--first-name',prompt='Enter the firstname')
+@click.option('--last-name',prompt='Enter the lastname')
+def add_student(first_name,last_name):
+    student=Student(first_name=first_name,last_name=last_name)
     session.add(student)
     session.commit()
-    # session.close()
-    print(f'added student {first_name} {last_name} ')
+    print("Student added successfully ")
+cli.add_command(add_teacher)  # Register the add_teacher command
+cli.add_command(add_student)
+# Add more commands as needed
 
-@click.command()
-def add_parent():
-    # session=Session()
-    first_name=input("Enter your first name: ")
-    last_name=input("Enter your last name: ")
-    age=input("Enter your age: ")
-    parent=Parent(first_name=first_name,last_name=last_name,age=age)
-    session.add(parent)
-    session.commit()
-    #session.close()
-    print(f'Added parent {first_name} {last_name}')
-    
-if __name__=='__main__':
-    Session=sessionmaker(bind=engine)
 
-    while True:
-        print("\nSchool management system")
-        print("1. Add Student")
-        print("2. Add Parent")
-        print("3. Quit")
+if __name__ == '__main__':
+    cli()
 
-        choice=input("Enter your choice (1-3)")
-        if choice == '1':
-            add_student()
-        elif choice =='2':
-            add_parent()
-        elif choice=='3':
-            break
-        else:
-            print("Invalid choice.opppsy! Try again.")
+
+
+
+
