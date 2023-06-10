@@ -3,6 +3,10 @@ from sqlalchemy import (create_engine,Column,Integer,String,ForeignKey,Table)
 from sqlalchemy.orm import sessionmaker,relationship,backref
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
+# a trick to avoid the interpreter from being confused
+# name an attribute that is possed by modules that is assigned to at runtime
+# assigned main if the module is the main program 
+# refactoring code in this block ensures that it runs only when we tell it to
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///school.db', echo=True)
@@ -33,16 +37,12 @@ class Teacher(Base):
         return self.parents
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
-    
-    # def fav_student(self):
-    #     fav_student=session.query(Student).order_by(Student.position_in.desc()).first()
-    #     return fav_student
-    # def add_student(age_in,grade_in,first_name,session):
-    #     student=Student(first_name=first_name, age_in=age_in,grade_in=grade_in )
-    #     session.add(student)
-    #     session.commit()
-    # def eliminate_student(self):
-    #     students_to_eliminate=[student for student in self.students if student.]
+    def fav_student(self):
+        highest_position=min([student.position_in for student in self.students])
+        print(highest_position)
+        fav_positions=[student for student in self.students if student.position_in == highest_position]
+        print(fav_positions)
+        return fav_positions[0].teacher
 class Parent(Base):
     __tablename__='parents'
     id= Column(Integer(),primary_key=True)
@@ -51,8 +51,6 @@ class Parent(Base):
     age=Column(Integer())
     students=relationship("Student",backref=backref("parent"))
     teachers=relationship("Teacher",secondary="teacher_parent",back_populates="parents")
-
-
     def __repr__(self):
         return f'Parent: {self.first_name}'
     def student(self):
@@ -64,10 +62,7 @@ class Parent(Base):
     @classmethod
     def oldest_parent(cls,session):
         return session.query(cls).order_by(cls.age.desc()).first()
-    
-    # def all_students(self):
-    #     return f'Parent of {self.student}'
-    
+
 class Student(Base):
     __tablename__='students'
     id = Column(Integer(), primary_key=True)
